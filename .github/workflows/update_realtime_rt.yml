@@ -1,4 +1,4 @@
-name: Update Data And Refresh Page
+name: Update Data
 on:
   push:
     branches:
@@ -7,7 +7,7 @@ on:
     - cron:  '* 12 * * *'
 
 jobs:
-  update-data:
+  Update-Data:
 # TODO: uncomment this
 #    if: github.event_name == 'schedule'
     runs-on: ubuntu-latest
@@ -40,7 +40,7 @@ jobs:
     - name: Update data
       id: update_data
       run: |
-        python3 ./realtime-rt/main.py
+        cd ./realtime-rt/ && python3 main.py
 
     - name: Save images & generated data
       run: |

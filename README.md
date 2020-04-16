@@ -1,14 +1,16 @@
 # COVID-19 Projects 
 A collection of work related to COVID-19
 
-![Update Data And Refresh Page](https://github.com/custompointofview/covid-19/workflows/Update%20Data%20And%20Refresh%20Page/badge.svg?branch=master)
+![Update Data](https://github.com/custompointofview/covid-19/workflows/Update%20Data/badge.svg)
 
-## Rt in Realtime (EUROPE & ROMANIA)
+## R0 in Realtime (EUROPE & ROMANIA)
 **A mimetic implementation after:** [Realtime-R0](https://github.com/k-sys/covid-19/blob/master/Realtime%20R0.ipynb)
 
 > Extending my thanks to [@k-sys](https://github.com/k-sys/) for the proposal.
 
 ### Explanations
+
+**Definition**
 
 The basic reproduction number (R0), also called the basic reproduction ratio or rate or the basic 
 reproductive rate, is an epidemiologic metric used to describe the contagiousness or transmissibility
@@ -20,7 +22,10 @@ and R0 cannot be modified through vaccination campaigns. R0 is rarely measured d
 R0 values are dependent on model structures and assumptions. Some R0 values reported in the scientific 
 literature are likely obsolete. R0 must be estimated, reported, and applied with great caution because 
 this basic metric is far from simple.
-> (source): https://wwwnc.cdc.gov/eid/article/25/1/17-1901_article
+> (source): [Complexity of the Basic Reproduction Number (R0)](https://wwwnc.cdc.gov/eid/article/25/1/17-1901_article)
+
+**The Basic Gist**
+
 
 #### Romania
 
@@ -31,11 +36,11 @@ There were only national reports in that time.
 :heavy_exclamation_mark: Due to inconsistent data some county charts can be misleading or dead wrong.
 Hopefully these will be remedied once official data starts coming in.    
 
-###### Rt for the entire country 
+###### Rt For Romania
 ![RomaniaNewCasesPerDay](realtime-rt/plots/romania/Romania_per_day.png)
 ![RomaniaRealtimeRt](realtime-rt/plots/romania/Romania_realtime_rt.png)
 
-###### Rt for every county
+###### Rt For Every County
 ![AllCountyRealtimeRt](realtime-rt/plots/romania/results/all_counties_realtime_rt.png)
 ![AllCountyRealtimeRtML](realtime-rt/plots/romania/results/all_counties_realtime_rt_ml.png)
 ![AllCountyRealtimeRtH](realtime-rt/plots/romania/results/all_counties_realtime_rt_high.png)
