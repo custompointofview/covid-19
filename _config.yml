@@ -1,1 +1,6 @@
 theme: jekyll-theme-minimal
+title: COVID-19 Playground
+description: A collection of work related to COVID-19
+logo: https://img.icons8.com/ios/100/000000/virus-free.png
+plugins:
+  - jemoji
