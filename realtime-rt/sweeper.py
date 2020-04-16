@@ -83,6 +83,7 @@ class SweeperRO:
     GETDailyCases = "https://covid19.geo-spatial.org/api/dashboard/getDailyCases"
     # JSON downloaded from https://datelazi.ro/ - historical data about cases per county
     GETHistoryInfoJSON = "ro_history_15-04-2020.json"
+    # JSON format with important data by day in Romania
     GETHistoryInfo = "https://api1.datelazi.ro/api/v2/data"
 
     ROFilter = ["AB", "AG", "AR", "B", "BC", "BH", "BN", "BR", "BT", "BV", "BZ", "CJ", "CL", "CS", "CT", "CV", "DB",

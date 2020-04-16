@@ -40,14 +40,14 @@ class PlotUtils:
             os.makedirs(self.dump_info_dir_path)
 
     def highest_density_interval(self, pmf, p=.95):
-        # print("\tPreparing HDI...      ", end="", flush=True)
         # If we pass a DataFrame, just call this recursively on the columns
         if isinstance(pmf, pd.DataFrame):
-            return pd.DataFrame([self.highest_density_interval(pmf[col]) for col in pmf],
+            return pd.DataFrame([self.highest_density_interval(pmf[col], p=p) for col in pmf],
                                 index=pmf.columns)
 
         if all(np.isnan(pmf.values)):
             return pd.Series([0, 0], index=['Low', 'High'])
+
         cumsum = np.cumsum(pmf.values)
         best = None
         for i, value in enumerate(cumsum):
@@ -57,39 +57,54 @@ class PlotUtils:
                     break
         low = pmf.index[best[0]]
         high = pmf.index[best[1]]
-        series = pd.Series([low, high], index=['Low', 'High'])
-        # print("[DONE]")
-        return series
+        return pd.Series([low, high], index=[f'Low_{p*100:.0f}', f'High_{p*100:.0f}'])
 
-    def get_posteriors(self, sr, window=7, min_periods=1):
+    def get_posteriors(self, sr, sigma=0.15, window=7, min_periods=1):
         print("\tPreparing posteriors...\t\t", end="", flush=True)
+        # (1) Calculate Lambda
         lam = sr[:-1].values * np.exp(self.GAMMA * (self.r_t_range[:, None] - 1))
-
-        # Note: if you want to have a Uniform prior you can use the following line instead.
-        # I chose the gamma distribution because of our prior knowledge of the likely value
-        # of R_t.
-
-        # prior0 = np.full(len(r_t_range), np.log(1/len(r_t_range)))
-        prior0 = np.log(sps.gamma(a=3).pdf(self.r_t_range) + 1e-14)
-
+        # (2) Calculate each day's likelihood
         likelihoods = pd.DataFrame(
-            # Short-hand way of concatenating the prior and likelihoods
-            data=np.c_[prior0, sps.poisson.logpmf(sr[1:].values, lam)],
+            data=sps.poisson.pmf(sr[1:].values, lam),
             index=self.r_t_range,
-            columns=sr.index)
+            columns=sr.index[1:])
+        # (3) Create the Gaussian Matrix
+        process_matrix = sps.norm(loc=self.r_t_range,
+                                  scale=sigma
+                                  ).pdf(self.r_t_range[:, None])
+        # (3a) Normalize all rows to sum to 1
+        process_matrix /= process_matrix.sum(axis=0)
+        # (4) Calculate the initial prior
+        prior0 = sps.gamma(a=4).pdf(self.r_t_range)
+        prior0 /= prior0.sum()
 
-        # Perform a rolling sum of log likelihoods. This is the equivalent
-        # of multiplying the original distributions. Exponentiate to move
-        # out of log.
-        posteriors = likelihoods.rolling(window,
-                                         axis=1,
-                                         min_periods=min_periods).sum()
-        posteriors = np.exp(posteriors)
+        # Create a DataFrame that will hold our posteriors for each day
+        # Insert our prior as the first posterior.
+        posteriors = pd.DataFrame(
+            index=self.r_t_range,
+            columns=sr.index,
+            data={sr.index[0]: prior0}
+        )
 
-        # Normalize to 1.0
-        posteriors = posteriors.div(posteriors.sum(axis=0), axis=1)
+        # We said we'd keep track of the sum of the log of the probability
+        # of the data for maximum likelihood calculation.
+        log_likelihood = 0.0
+
+        # (5) Iteratively apply Bayes' rule
+        for previous_day, current_day in zip(sr.index[:-1], sr.index[1:]):
+            # (5a) Calculate the new prior
+            current_prior = process_matrix @ posteriors[previous_day]
+            # (5b) Calculate the numerator of Bayes' Rule: P(k|R_t)P(R_t)
+            numerator = likelihoods[current_day] * current_prior
+            # (5c) Calculate the denominator of Bayes' Rule P(k)
+            denominator = np.sum(numerator)
+            # Execute full Bayes' Rule
+            posteriors[current_day] = numerator / denominator
+            # Add to the running sum of log likelihoods
+            log_likelihood += np.log(denominator)
+
         print("[DONE]")
-        return posteriors
+        return posteriors, log_likelihood
 
     def prepare_cases(self, cases, window=7):
         print('\tWindow size:', window)
@@ -125,6 +140,61 @@ class PlotUtils:
         print("[DONE]")
         return original, smoothed
 
+    def choose_sigma(self, states):
+        sigmas = np.linspace(1 / 20, 1, 20)
+        results = {}
+        for state_name, cases in states.groupby(level='state'):
+            print("= Processing sigma for " + state_name + "...")
+            try:
+                new, smoothed = self.prepare_cases(cases)
+            except Exception as e:
+                print('===', e)
+                continue
+
+            # Holds all posteriors with every given value of sigma
+            # Holds the log likelihood across all k for each value of sigma
+            result = {'posteriors': [], 'log_likelihoods': []}
+
+            for sigma in sigmas:
+                posteriors, log_likelihood = self.get_posteriors(smoothed, sigma=sigma)
+                result['posteriors'].append(posteriors)
+                result['log_likelihoods'].append(log_likelihood)
+
+            # Store all results keyed off of state name
+            results[state_name] = result
+
+        # Each index of this array holds the total of the log likelihoods for
+        # the corresponding index of the sigmas array.
+        total_log_likelihoods = np.zeros_like(sigmas)
+
+        # Loop through each state's results and add the log likelihoods to the running total.
+        for state_name, result in results.items():
+            total_log_likelihoods += result['log_likelihoods']
+
+        # Select the index with the largest log likelihood total
+        max_likelihood_index = total_log_likelihoods.argmax()
+
+        # Select the value that has the highest log likelihood
+        sigma = sigmas[max_likelihood_index]
+        return results, sigma, max_likelihood_index
+
+    def get_final_results(self, results, max_likelihood_index):
+        final_results = None
+
+        for state_name, result in results.items():
+            print("= Processing results for " + state_name + "...")
+            posteriors = result['posteriors'][max_likelihood_index]
+            hdis_90 = self.highest_density_interval(posteriors, p=.9)
+            hdis_50 = self.highest_density_interval(posteriors, p=.5)
+            most_likely = posteriors.idxmax().rename('ML')
+            result = pd.concat([most_likely, hdis_90, hdis_50], axis=1)
+            if final_results is None:
+                final_results = result
+            else:
+                final_results = pd.concat([final_results, result])
+
+        return final_results
+
     @staticmethod
     def plot_rt(result, state_name, fig, ax):
         ax.set_title(f"{state_name}")
@@ -153,12 +223,12 @@ class PlotUtils:
 
         # Aesthetically, extrapolate credible interval by 1 day either side
         lowfn = interp1d(date2num(index),
-                         result['Low'].values,
+                         result['Low_90'].values,
                          bounds_error=False,
                          fill_value='extrapolate')
 
         highfn = interp1d(date2num(index),
-                          result['High'].values,
+                          result['High_90'].values,
                           bounds_error=False,
                           fill_value='extrapolate')
 
@@ -194,13 +264,13 @@ class PlotUtils:
         fig.set_facecolor('w')
 
         ax.set_title(f'Real-time $R_t$ for {state_name}')
-        ax.set_ylim(.5, 3.5)
         ax.xaxis.set_major_locator(mdates.WeekdayLocator())
         ax.xaxis.set_major_formatter(mdates.DateFormatter('%b %d'))
 
     def plot_state_cases_per_day(self, states, state_name, window):
         print('= Plotting cases/day...')
-        fig, ax = plt.subplots(figsize=(600 / 72, 400 / 72))
+        figsize = (800 / 72, 600 / 72)
+        fig, ax = plt.subplots(figsize=figsize)
         cases = states.xs(state_name).rename(f"{state_name} cases")
         original, smoothed = self.prepare_cases(cases, window)
 
@@ -210,76 +280,39 @@ class PlotUtils:
                       alpha=.5,
                       label='Actual',
                       legend=True,
-                      figsize=(600 / 72, 400 / 72))
+                      figsize=figsize)
 
         ax = smoothed.plot(label='Smoothed',
                            legend=True)
         ax.get_figure().set_facecolor('w')
 
-        # plt.show()
         plt.savefig(os.path.join(self.dump_dir_path, state_name + '_per_day.png'))
         plt.close(fig)
-        print('= Done.')
 
     def plot_state_realtime_rt(self, states, state_name, window):
         print('= Plotting realtime...')
         fig, ax = plt.subplots(figsize=(600 / 72, 400 / 72))
-        cases = states.xs(state_name).rename(f"{state_name} cases")
 
-        original, smoothed = self.prepare_cases(cases, window)
+        results, sigmas, max_likelihood_index = self.choose_sigma(states)
+        final_results = self.get_final_results(results=results, max_likelihood_index=max_likelihood_index)
 
-        posteriors = self.get_posteriors(smoothed, window)
+        self.plot_rt(final_results, state_name, fig, ax)
 
-        hdis = self.highest_density_interval(posteriors)
-
-        most_likely = posteriors.idxmax().rename('ML')
-
-        # Look into why you shift -1
-        result = pd.concat([most_likely, hdis], axis=1)
-        result.tail()
-
-        self.plot_rt(result, state_name, fig, ax)
-
-        # plt.show()
         plt.savefig(os.path.join(self.dump_dir_path, state_name + '_realtime_rt.png'))
         plt.close(fig)
-        print('= Done.')
 
     def plot_all_states(self, states, filter_region=None, no_lockdown=None, partial_lockdown=None):
         if filter_region is None:
             filter_region = []
 
-        results = {}
-        for state_name, cases in states.groupby(level='state'):
-            if state_name == '-':
-                print(f'Skipping {state_name}')
-                continue
+        results, sigmas, max_likelihood_index = self.choose_sigma(states)
+        final_results = self.get_final_results(results=results, max_likelihood_index=max_likelihood_index)
 
-            print('=' * 75)
-            print(f'Processing {state_name}')
-
-            try:
-                new, smoothed = self.prepare_cases(cases)
-            except Exception as e:
-                print('===', e)
-                continue
-
-            print('\tGetting Posteriors')
-            posteriors = self.get_posteriors(smoothed)
-            print('\tGetting HDIs')
-            hdis = self.highest_density_interval(posteriors)
-            print('\tGetting most likely values')
-            most_likely = posteriors.idxmax().rename('ML')
-            result = pd.concat([most_likely, hdis], axis=1)
-            results[state_name] = result.droplevel(0)
-
-        print("Done.")
         ncols = 4
         nrows = int(np.ceil(len(results) / ncols))
 
         fig, axes = plt.subplots(nrows=nrows, ncols=ncols, figsize=(15, nrows * 3))
-
-        for i, (state_name, result) in enumerate(results.items()):
+        for i, (state_name, result) in enumerate(final_results.groupby('state')):
             self.plot_rt(result, state_name, fig, axes.flat[i])
 
         fig.tight_layout()
@@ -287,20 +320,13 @@ class PlotUtils:
         plt.savefig(os.path.join(self.dump_info_dir_path, 'all_counties_realtime_rt.png'))
         plt.close(fig)
 
-        overall = None
-        for state_name, result in results.items():
-            r = result.copy()
-            r.index = pd.MultiIndex.from_product([[state_name], result.index])
-            if overall is None:
-                overall = r
-            else:
-                overall = pd.concat([overall, r])
+        final_results.to_csv(os.path.join(self.dump_info_dir_path, 'all_counties_realtime_rt.csv'))
 
-        overall.sort_index(inplace=True)
-        overall.to_csv(os.path.join(self.dump_info_dir_path, 'all_counties_realtime_rt.csv'))
-
-        filtered = overall.index.get_level_values(0).isin(filter_region)
-        mr = overall.loc[~filtered].groupby(level=0)[['ML', 'High', 'Low']].last()
+        #######################
+        # Plot standings
+        #######################
+        filtered = final_results.index.get_level_values(0).isin(filter_region)
+        mr = final_results.loc[~filtered].groupby(level=0)[['ML', 'High_90', 'Low_90']].last()
 
         mr.sort_values('ML', inplace=True)
         figsize = ((15.9 / 50) * len(mr) + .1 + 1, 11)
@@ -309,25 +335,21 @@ class PlotUtils:
         plt.savefig(os.path.join(self.dump_info_dir_path, 'all_counties_realtime_rt_ml.png'))
         plt.close(fig)
 
-        mr.sort_values('High', inplace=True)
-        figsize = ((15.9 / 50) * len(mr) + .1 + 1, 11)
+        mr.sort_values('High_90', inplace=True)
         fig, ax = self.plot_standings(mr, figsize=figsize,
                                       no_lockdown=no_lockdown, partial_lockdown=partial_lockdown)
         plt.savefig(os.path.join(self.dump_info_dir_path, 'all_counties_realtime_rt_high.png'))
         plt.close(fig)
 
-        show = mr[mr.High.le(1.1)].sort_values('ML')
-        figsize = ((15.9 / 50) * len(mr) + .1 + 1, 11)
+        show = mr[mr.High_90.le(1.0)].sort_values('ML')
         fig, ax = self.plot_standings(show, title='Likely Under Control', figsize=figsize,
                                       no_lockdown=no_lockdown, partial_lockdown=partial_lockdown)
         plt.savefig(os.path.join(self.dump_info_dir_path, 'all_counties_realtime_rt_luc.png'))
         plt.close(fig)
 
-        show = mr[mr.Low.ge(1.05)].sort_values('Low')
-        figsize = ((15.9 / 50) * len(mr) + .1 + 1, 11)
-        fig, ax = self.plot_standings(show, figsize=figsize, title='Likely Not Under Control',
+        show = mr[mr.Low_90.ge(1.0)].sort_values('Low_90')
+        fig, ax = self.plot_standings(show, figsize=figsize, title='Likely NOT Under Control',
                                       no_lockdown=no_lockdown, partial_lockdown=partial_lockdown)
-        ax.get_legend().remove()
         plt.savefig(os.path.join(self.dump_info_dir_path, 'all_counties_realtime_rt_lnuc.png'))
         plt.close(fig)
 
@@ -341,13 +363,15 @@ class PlotUtils:
         NONE_COLOR = [179 / 255, 35 / 255, 14 / 255]
         PARTIAL_COLOR = [.5, .5, .5]
         ERROR_BAR_COLOR = [.3, .3, .3]
+
+        # Processing...
         if not figsize:
             figsize = ((15.9 / 50) * len(mr) + .1, 4)
 
         fig, ax = plt.subplots(figsize=figsize)
 
         ax.set_title(title)
-        err = mr[['Low', 'High']].sub(mr['ML'], axis=0).abs()
+        err = mr[['Low_90', 'High_90']].sub(mr['ML'], axis=0).abs()
         bars = ax.bar(mr.index,
                       mr['ML'],
                       width=.825,

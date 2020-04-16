@@ -15,6 +15,7 @@ def plot_romania():
     pu = plotter.PlotUtils(sw_ro.png_dir_path)
     pu.create_dump_dir()
 
+    print('= Getting data...')
     daily_cases_path = sw_ro.get_daily_cases()
 
     states = pd.read_csv(daily_cases_path,
@@ -27,6 +28,7 @@ def plot_romania():
 
     pu.plot_state_cases_per_day(states, state_name, window)
     pu.plot_state_realtime_rt(states, state_name, window)
+    print('= [DONE]')
 
 
 def plot_romania_counties():
