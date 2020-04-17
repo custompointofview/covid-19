@@ -5,11 +5,12 @@ A collection of work related to COVID-19
 
 ## R0 in Realtime
 **A mimetic implementation after:** [Realtime-R0](https://github.com/k-sys/covid-19/blob/master/Realtime%20R0.ipynb)
+
 **Extending my thanks to [@k-sys](https://github.com/k-sys/) for the proposal.**
 
-:bangbang: :globe_with_meridians: **This project is dedicate to Romania & Europe**
+:globe_with_meridians: **This project is dedicate to Romania & Europe**
 
-> :warning: Data will be updated daily!
+:warning: Data will be updated daily!
 
 - [COVID-19 Projects](#covid-19-projects)
   * [R0 in Realtime](#r0-in-realtime)
@@ -54,7 +55,7 @@ Unele valori R0 raportate în literatura de specialitate sunt probabil învechit
 și aplicat cu multă atenție fiindcă metrica aceasta e departe de a fi simplă.  
 ```
 
-#### Comparative RO
+#### Comparative R0
 
 - `R0` for measles: `3.7 < R0 < 203`
 - `R0` for influenza: `= 1.3`
@@ -86,7 +87,7 @@ RO:
 - Dacă Rt >> 1, pandemia (boala) se va răspândi la o bună parte din populație.
 - Dacă Rt < 1, pandemia (boala) va înceti rapid înainte să infecteze mulți oameni.
 - Cu cât valoarea lui Rt e mai mică cu atât situația devine mai controlabilă. 
-În general, orice valoare Rt < 1 înseamnă că lucrurile sunt sub control.
+  În general, orice valoare Rt < 1 înseamnă că lucrurile sunt sub control.
 - Epidemiologi respectați susțin ideea că utilizarea valorii Rt e singura modalitate de a gestiona criza.  
 ```
 
@@ -102,12 +103,12 @@ RO:
 publice informații oficiale pe zi per județ. Doar informații de nivel național au fost transmise.    
 ```
 
-:heavy_exclamation_mark: Due to inconsistent data some county charts can be misleading or dead wrong.
+:heavy_exclamation_mark: Due to inconsistent data some county charts can be misleading, wrong or missing.
 Hopefully these will be remedied once official data starts coming in.    
 
 ```
 RO:
-! Din cauza datelor inconsistente o parte din grafice pot fi derutante ori chiar greșite. Să sperăm că problemele
+! Din pricina inconsistenței datelor o parte din grafice pot fi derutante, greșite ori chiar lipsă. Să sperăm că problemele
 vor fi remediate odată ce date oficiale vor fi furnizate.  
 ```
 
@@ -116,7 +117,7 @@ to see if parameter changes will impact the processing of data.
 
 ```
 RO:
-! Încă sunt în căutarea datelor consistente și încerc diferite modificări în algoritm pentru a vedea dacă 
+! Încă sunt în căutare de date consistente și încerc diferite modificări în algoritm pentru a vedea dacă 
 modificările de parametrii influențează procesarea de date.  
 ```   
 
