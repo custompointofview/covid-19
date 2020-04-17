@@ -1,5 +1,4 @@
 date,state,cases
-2020-03-17,Albania,55
 2020-03-18,Albania,59
 2020-03-19,Albania,64
 2020-03-20,Albania,70
@@ -29,7 +28,7 @@ date,state,cases
 2020-04-13,Albania,467
 2020-04-14,Albania,475
 2020-04-15,Albania,494
-2020-03-17,Andorra,39
+2020-04-16,Albania,518
 2020-03-18,Andorra,39
 2020-03-19,Andorra,53
 2020-03-20,Andorra,75
@@ -59,7 +58,7 @@ date,state,cases
 2020-04-13,Andorra,646
 2020-04-14,Andorra,659
 2020-04-15,Andorra,673
-2020-03-17,Austria,1332
+2020-04-16,Andorra,673
 2020-03-18,Austria,1646
 2020-03-19,Austria,2013
 2020-03-20,Austria,2388
@@ -89,7 +88,7 @@ date,state,cases
 2020-04-13,Austria,14041
 2020-04-14,Austria,14226
 2020-04-15,Austria,14336
-2020-03-17,Belarus,36
+2020-04-16,Austria,14476
 2020-03-18,Belarus,51
 2020-03-19,Belarus,51
 2020-03-20,Belarus,69
@@ -119,7 +118,7 @@ date,state,cases
 2020-04-13,Belarus,2919
 2020-04-14,Belarus,3281
 2020-04-15,Belarus,3728
-2020-03-17,Belgium,1243
+2020-04-16,Belarus,4204
 2020-03-18,Belgium,1486
 2020-03-19,Belgium,1795
 2020-03-20,Belgium,2257
@@ -149,7 +148,7 @@ date,state,cases
 2020-04-13,Belgium,30589
 2020-04-14,Belgium,31119
 2020-04-15,Belgium,33573
-2020-03-17,Bosnia,26
+2020-04-16,Belgium,34809
 2020-03-18,Bosnia,38
 2020-03-19,Bosnia,63
 2020-03-20,Bosnia,89
@@ -179,7 +178,7 @@ date,state,cases
 2020-04-13,Bosnia,1037
 2020-04-14,Bosnia,1083
 2020-04-15,Bosnia,1110
-2020-03-17,Bulgaria,67
+2020-04-16,Bosnia,1167
 2020-03-18,Bulgaria,92
 2020-03-19,Bulgaria,94
 2020-03-20,Bulgaria,127
@@ -209,7 +208,7 @@ date,state,cases
 2020-04-13,Bulgaria,685
 2020-04-14,Bulgaria,713
 2020-04-15,Bulgaria,747
-2020-03-17,Croatia,65
+2020-04-16,Bulgaria,800
 2020-03-18,Croatia,81
 2020-03-19,Croatia,105
 2020-03-20,Croatia,128
@@ -239,7 +238,7 @@ date,state,cases
 2020-04-13,Croatia,1650
 2020-04-14,Croatia,1704
 2020-04-15,Croatia,1741
-2020-03-17,Czechia,396
+2020-04-16,Croatia,1791
 2020-03-18,Czechia,464
 2020-03-19,Czechia,694
 2020-03-20,Czechia,833
@@ -269,7 +268,7 @@ date,state,cases
 2020-04-13,Czechia,6059
 2020-04-14,Czechia,6111
 2020-04-15,Czechia,6216
-2020-03-17,Denmark,977
+2020-04-16,Czechia,6433
 2020-03-18,Denmark,1057
 2020-03-19,Denmark,1151
 2020-03-20,Denmark,1255
@@ -299,7 +298,7 @@ date,state,cases
 2020-04-13,Denmark,6318
 2020-04-14,Denmark,6511
 2020-04-15,Denmark,6681
-2020-03-17,Estonia,225
+2020-04-16,Denmark,6879
 2020-03-18,Estonia,258
 2020-03-19,Estonia,267
 2020-03-20,Estonia,283
@@ -329,7 +328,7 @@ date,state,cases
 2020-04-13,Estonia,1332
 2020-04-14,Estonia,1373
 2020-04-15,Estonia,1400
-2020-03-17,Finland,321
+2020-04-16,Estonia,1434
 2020-03-18,Finland,336
 2020-03-19,Finland,400
 2020-03-20,Finland,450
@@ -359,7 +358,7 @@ date,state,cases
 2020-04-13,Finland,3064
 2020-04-14,Finland,3161
 2020-04-15,Finland,3237
-2020-03-17,France,7652
+2020-04-16,Finland,3369
 2020-03-18,France,9043
 2020-03-19,France,10871
 2020-03-20,France,12612
@@ -377,19 +376,19 @@ date,state,cases
 2020-04-01,France,56989
 2020-04-02,France,59105
 2020-04-03,France,64338
-2020-04-04,France,89953
-2020-04-05,France,92839
-2020-04-06,France,98010
-2020-04-07,France,109069
-2020-04-08,France,112950
-2020-04-09,France,117749
-2020-04-10,France,124869
-2020-04-11,France,129654
-2020-04-12,France,132591
-2020-04-13,France,136779
+2020-04-04,France,68605
+2020-04-05,France,70478
+2020-04-06,France,74390
+2020-04-07,France,78167
+2020-04-08,France,82048
+2020-04-09,France,86334
+2020-04-10,France,90676
+2020-04-11,France,93790
+2020-04-12,France,120633
+2020-04-13,France,124298
 2020-04-14,France,130253
 2020-04-15,France,133470
-2020-03-17,Germany,9257
+2020-04-16,France,145960
 2020-03-18,Germany,12327
 2020-03-19,Germany,15320
 2020-03-20,Germany,19848
@@ -419,7 +418,7 @@ date,state,cases
 2020-04-13,Germany,130072
 2020-04-14,Germany,131359
 2020-04-15,Germany,134753
-2020-03-17,Greece,387
+2020-04-16,Germany,137698
 2020-03-18,Greece,418
 2020-03-19,Greece,418
 2020-03-20,Greece,495
@@ -449,7 +448,7 @@ date,state,cases
 2020-04-13,Greece,2145
 2020-04-14,Greece,2170
 2020-04-15,Greece,2192
-2020-03-17,Holy See,1
+2020-04-16,Greece,2207
 2020-03-18,Holy See,1
 2020-03-19,Holy See,1
 2020-03-20,Holy See,1
@@ -479,7 +478,7 @@ date,state,cases
 2020-04-13,Holy See,8
 2020-04-14,Holy See,8
 2020-04-15,Holy See,8
-2020-03-17,Hungary,50
+2020-04-16,Holy See,8
 2020-03-18,Hungary,58
 2020-03-19,Hungary,73
 2020-03-20,Hungary,85
@@ -509,7 +508,7 @@ date,state,cases
 2020-04-13,Hungary,1458
 2020-04-14,Hungary,1512
 2020-04-15,Hungary,1579
-2020-03-17,Iceland,220
+2020-04-16,Hungary,1652
 2020-03-18,Iceland,250
 2020-03-19,Iceland,330
 2020-03-20,Iceland,409
@@ -539,7 +538,7 @@ date,state,cases
 2020-04-13,Iceland,1711
 2020-04-14,Iceland,1720
 2020-04-15,Iceland,1727
-2020-03-17,Ireland,223
+2020-04-16,Iceland,1739
 2020-03-18,Ireland,292
 2020-03-19,Ireland,557
 2020-03-20,Ireland,683
@@ -569,7 +568,7 @@ date,state,cases
 2020-04-13,Ireland,10647
 2020-04-14,Ireland,11479
 2020-04-15,Ireland,12547
-2020-03-17,Italy,31506
+2020-04-16,Ireland,13271
 2020-03-18,Italy,35713
 2020-03-19,Italy,41035
 2020-03-20,Italy,47021
@@ -599,7 +598,7 @@ date,state,cases
 2020-04-13,Italy,159516
 2020-04-14,Italy,162488
 2020-04-15,Italy,165155
-2020-03-17,Latvia,49
+2020-04-16,Italy,168941
 2020-03-18,Latvia,71
 2020-03-19,Latvia,86
 2020-03-20,Latvia,111
@@ -629,7 +628,7 @@ date,state,cases
 2020-04-13,Latvia,655
 2020-04-14,Latvia,657
 2020-04-15,Latvia,666
-2020-03-17,Liechtenstein,7
+2020-04-16,Latvia,675
 2020-03-18,Liechtenstein,28
 2020-03-19,Liechtenstein,28
 2020-03-20,Liechtenstein,28
@@ -659,7 +658,7 @@ date,state,cases
 2020-04-13,Liechtenstein,79
 2020-04-14,Liechtenstein,79
 2020-04-15,Liechtenstein,79
-2020-03-17,Lithuania,25
+2020-04-16,Liechtenstein,79
 2020-03-18,Lithuania,27
 2020-03-19,Lithuania,36
 2020-03-20,Lithuania,49
@@ -689,7 +688,7 @@ date,state,cases
 2020-04-13,Lithuania,1062
 2020-04-14,Lithuania,1070
 2020-04-15,Lithuania,1091
-2020-03-17,Luxembourg,140
+2020-04-16,Lithuania,1128
 2020-03-18,Luxembourg,203
 2020-03-19,Luxembourg,335
 2020-03-20,Luxembourg,484
@@ -719,7 +718,7 @@ date,state,cases
 2020-04-13,Luxembourg,3292
 2020-04-14,Luxembourg,3307
 2020-04-15,Luxembourg,3373
-2020-03-17,Malta,38
+2020-04-16,Luxembourg,3444
 2020-03-18,Malta,38
 2020-03-19,Malta,53
 2020-03-20,Malta,64
@@ -749,7 +748,7 @@ date,state,cases
 2020-04-13,Malta,384
 2020-04-14,Malta,393
 2020-04-15,Malta,399
-2020-03-17,Moldova,30
+2020-04-16,Malta,412
 2020-03-18,Moldova,30
 2020-03-19,Moldova,49
 2020-03-20,Moldova,66
@@ -779,7 +778,7 @@ date,state,cases
 2020-04-13,Moldova,1712
 2020-04-14,Moldova,1934
 2020-04-15,Moldova,2049
-2020-03-17,Monaco,7
+2020-04-16,Moldova,2154
 2020-03-18,Monaco,7
 2020-03-19,Monaco,7
 2020-03-20,Monaco,11
@@ -809,7 +808,7 @@ date,state,cases
 2020-04-13,Monaco,93
 2020-04-14,Monaco,93
 2020-04-15,Monaco,93
-2020-03-17,Montenegro,2
+2020-04-16,Monaco,93
 2020-03-18,Montenegro,2
 2020-03-19,Montenegro,3
 2020-03-20,Montenegro,14
@@ -839,7 +838,7 @@ date,state,cases
 2020-04-13,Montenegro,274
 2020-04-14,Montenegro,283
 2020-04-15,Montenegro,288
-2020-03-17,Netherlands,1705
+2020-04-16,Montenegro,303
 2020-03-18,Netherlands,2051
 2020-03-19,Netherlands,2460
 2020-03-20,Netherlands,2994
@@ -869,7 +868,7 @@ date,state,cases
 2020-04-13,Netherlands,26551
 2020-04-14,Netherlands,27419
 2020-04-15,Netherlands,28153
-2020-03-17,Macedonia,26
+2020-04-16,Netherlands,29214
 2020-03-18,Macedonia,35
 2020-03-19,Macedonia,48
 2020-03-20,Macedonia,67
@@ -899,7 +898,7 @@ date,state,cases
 2020-04-13,Macedonia,854
 2020-04-14,Macedonia,908
 2020-04-15,Macedonia,974
-2020-03-17,Norway,1463
+2020-04-16,Macedonia,1081
 2020-03-18,Norway,1550
 2020-03-19,Norway,1746
 2020-03-20,Norway,1914
@@ -929,7 +928,7 @@ date,state,cases
 2020-04-13,Norway,6603
 2020-04-14,Norway,6623
 2020-04-15,Norway,6740
-2020-03-17,Poland,238
+2020-04-16,Norway,6896
 2020-03-18,Poland,251
 2020-03-19,Poland,355
 2020-03-20,Poland,425
@@ -959,7 +958,7 @@ date,state,cases
 2020-04-13,Poland,6934
 2020-04-14,Poland,7202
 2020-04-15,Poland,7582
-2020-03-17,Portugal,448
+2020-04-16,Poland,7918
 2020-03-18,Portugal,448
 2020-03-19,Portugal,785
 2020-03-20,Portugal,1020
@@ -989,7 +988,7 @@ date,state,cases
 2020-04-13,Portugal,16934
 2020-04-14,Portugal,17448
 2020-04-15,Portugal,18091
-2020-03-17,Romania,184
+2020-04-16,Portugal,18841
 2020-03-18,Romania,260
 2020-03-19,Romania,277
 2020-03-20,Romania,308
@@ -1019,7 +1018,7 @@ date,state,cases
 2020-04-13,Romania,6633
 2020-04-14,Romania,6879
 2020-04-15,Romania,7216
-2020-03-17,Russia,114
+2020-04-16,Romania,7707
 2020-03-18,Russia,147
 2020-03-19,Russia,199
 2020-03-20,Russia,253
@@ -1049,7 +1048,7 @@ date,state,cases
 2020-04-13,Russia,18328
 2020-04-14,Russia,21102
 2020-04-15,Russia,24490
-2020-03-17,San Marino,109
+2020-04-16,Russia,27938
 2020-03-18,San Marino,119
 2020-03-19,San Marino,119
 2020-03-20,San Marino,144
@@ -1079,7 +1078,7 @@ date,state,cases
 2020-04-13,San Marino,356
 2020-04-14,San Marino,371
 2020-04-15,San Marino,372
-2020-03-17,Serbia,65
+2020-04-16,San Marino,426
 2020-03-18,Serbia,83
 2020-03-19,Serbia,103
 2020-03-20,Serbia,135
@@ -1109,7 +1108,7 @@ date,state,cases
 2020-04-13,Serbia,4054
 2020-04-14,Serbia,4465
 2020-04-15,Serbia,4873
-2020-03-17,Slovakia,72
+2020-04-16,Serbia,5318
 2020-03-18,Slovakia,105
 2020-03-19,Slovakia,123
 2020-03-20,Slovakia,137
@@ -1139,7 +1138,7 @@ date,state,cases
 2020-04-13,Slovakia,769
 2020-04-14,Slovakia,835
 2020-04-15,Slovakia,863
-2020-03-17,Slovenia,275
+2020-04-16,Slovakia,977
 2020-03-18,Slovenia,275
 2020-03-19,Slovenia,286
 2020-03-20,Slovenia,341
@@ -1169,7 +1168,7 @@ date,state,cases
 2020-04-13,Slovenia,1212
 2020-04-14,Slovenia,1220
 2020-04-15,Slovenia,1248
-2020-03-17,Spain,11748
+2020-04-16,Slovenia,1268
 2020-03-18,Spain,13910
 2020-03-19,Spain,17963
 2020-03-20,Spain,20410
@@ -1199,7 +1198,7 @@ date,state,cases
 2020-04-13,Spain,170099
 2020-04-14,Spain,172541
 2020-04-15,Spain,177644
-2020-03-17,Sweden,1190
+2020-04-16,Spain,184948
 2020-03-18,Sweden,1279
 2020-03-19,Sweden,1439
 2020-03-20,Sweden,1639
@@ -1229,7 +1228,7 @@ date,state,cases
 2020-04-13,Sweden,10948
 2020-04-14,Sweden,11445
 2020-04-15,Sweden,11927
-2020-03-17,Switzerland,2700
+2020-04-16,Sweden,12540
 2020-03-18,Switzerland,3028
 2020-03-19,Switzerland,4075
 2020-03-20,Switzerland,5294
@@ -1259,7 +1258,7 @@ date,state,cases
 2020-04-13,Switzerland,25688
 2020-04-14,Switzerland,25936
 2020-04-15,Switzerland,26336
-2020-03-17,Ukraine,14
+2020-04-16,Switzerland,26732
 2020-03-18,Ukraine,14
 2020-03-19,Ukraine,16
 2020-03-20,Ukraine,29
@@ -1289,7 +1288,7 @@ date,state,cases
 2020-04-13,Ukraine,3102
 2020-04-14,Ukraine,3372
 2020-04-15,Ukraine,3764
-2020-03-17,UK,1950
+2020-04-16,Ukraine,4161
 2020-03-18,UK,2626
 2020-03-19,UK,2689
 2020-03-20,UK,3983
@@ -1319,3 +1318,4 @@ date,state,cases
 2020-04-13,UK,88621
 2020-04-14,UK,93873
 2020-04-15,UK,98476
+2020-04-16,UK,103093
