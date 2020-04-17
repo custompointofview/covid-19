@@ -44,6 +44,7 @@ jobs:
 
     - name: Save images & generated data
       run: |
+        git status
         if git diff-index --quiet HEAD --; then
           echo No changes detected!
           exit 0
