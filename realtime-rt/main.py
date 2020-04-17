@@ -29,7 +29,7 @@ def plot_romania():
 
 def plot_romania_counties():
     sw_ro = sweeper.SweeperRO()
-    pu = plotter.PlotUtils(sw_ro.png_dir_path)
+    pu = plotter.PlotUtils(sw_ro.png_dir_path, start_date='2020-04-01', cap_limit=4.)
     pu.create_dump_dir()
 
     daily_cases_path = sw_ro.get_cases_by_county()
@@ -59,7 +59,7 @@ def plot_romania_counties():
 
 def plot_romania_counties_once():
     sw_ro = sweeper.SweeperRO()
-    pu = plotter.PlotUtils(sw_ro.png_dir_path)
+    pu = plotter.PlotUtils(sw_ro.png_dir_path, start_date='2020-04-01', cap_limit=4.)
     pu.create_dump_dir()
     daily_cases_path = sw_ro.get_cases_by_county()
 
@@ -77,7 +77,7 @@ def plot_europe():
     pu = plotter.PlotUtils(sw_eu.png_dir_path)
     pu.create_dump_dir()
 
-    daily_cases_path = sw_eu.get_daily_cases()
+    daily_cases_path = sw_eu.get_daily_cases_cssegi()
     states = pd.read_csv(daily_cases_path,
                          usecols=[0, 1, 2],
                          index_col=['state', 'date'],
@@ -108,7 +108,7 @@ def plot_europe_counties_once():
     pu = plotter.PlotUtils(sw_eu.png_dir_path)
     pu.create_dump_dir()
 
-    daily_cases_path = sw_eu.get_daily_cases()
+    daily_cases_path = sw_eu.get_daily_cases_cssegi()
     states = pd.read_csv(daily_cases_path,
                          usecols=[0, 1, 2],
                          index_col=['state', 'date'],
@@ -130,9 +130,9 @@ def plot_europe_counties_once():
 
 
 if __name__ == "__main__":
-    # plot_romania()
+    plot_romania()
     # plot_romania_counties()
-    # plot_romania_counties_once()
+    plot_romania_counties_once()
     # plot_europe()
     plot_europe_counties_once()
     pass
