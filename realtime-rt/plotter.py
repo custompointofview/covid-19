@@ -28,9 +28,11 @@ class PlotUtils:
     # https://wwwnc.cdc.gov/eid/article/26/6/20-0357_article
     GAMMA = 1 / 4
 
-    def __init__(self, path):
+    def __init__(self, path, start_date='2020-03-01'):
         self.dump_dir_path = path
         self.dump_info_dir_path = os.path.join(path, 'results')
+        self.start_date = start_date
+
         self.debug = False
 
     def create_dump_dir(self):
@@ -60,7 +62,6 @@ class PlotUtils:
         return pd.Series([low, high], index=[f'Low_{p*100:.0f}', f'High_{p*100:.0f}'])
 
     def get_posteriors(self, sr, sigma=0.15, window=7, min_periods=1):
-        print("\tPreparing posteriors...\t\t", end="", flush=True)
         # (1) Calculate Lambda
         lam = sr[:-1].values * np.exp(self.GAMMA * (self.r_t_range[:, None] - 1))
         # (2) Calculate each day's likelihood
@@ -103,7 +104,6 @@ class PlotUtils:
             # Add to the running sum of log likelihoods
             log_likelihood += np.log(denominator)
 
-        print("[DONE]")
         return posteriors, log_likelihood
 
     def prepare_cases(self, cases, window=7):
@@ -155,10 +155,12 @@ class PlotUtils:
             # Holds the log likelihood across all k for each value of sigma
             result = {'posteriors': [], 'log_likelihoods': []}
 
+            print("\tPreparing posteriors...\t\t", end="", flush=True)
             for sigma in sigmas:
                 posteriors, log_likelihood = self.get_posteriors(smoothed, sigma=sigma)
                 result['posteriors'].append(posteriors)
                 result['log_likelihoods'].append(log_likelihood)
+            print('[DONE]')
 
             # Store all results keyed off of state name
             results[state_name] = result
@@ -195,8 +197,7 @@ class PlotUtils:
 
         return final_results
 
-    @staticmethod
-    def plot_rt(result, state_name, fig, ax):
+    def plot_rt(self, result, state_name, fig, ax):
         ax.set_title(f"{state_name}")
 
         # Colors
@@ -232,7 +233,7 @@ class PlotUtils:
                           bounds_error=False,
                           fill_value='extrapolate')
 
-        extended = pd.date_range(start=pd.Timestamp('2020-03-01'),
+        extended = pd.date_range(start=pd.Timestamp(self.start_date),
                                  end=index[-1] + pd.Timedelta(days=1))
 
         ax.fill_between(extended,
@@ -260,7 +261,7 @@ class PlotUtils:
         ax.grid(which='major', axis='y', c='k', alpha=.1, zorder=-2)
         ax.margins(0)
         ax.set_ylim(0.0, 3.5)
-        ax.set_xlim(pd.Timestamp('2020-03-01'), result.index.get_level_values('date')[-1] + pd.Timedelta(days=1))
+        ax.set_xlim(pd.Timestamp(self.start_date), result.index.get_level_values('date')[-1] + pd.Timedelta(days=1))
         fig.set_facecolor('w')
 
         ax.set_title(f'Real-time $R_t$ for {state_name}')
