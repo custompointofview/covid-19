@@ -16,7 +16,7 @@ from matplotlib.patches import Patch
 from scipy import stats as sps
 from scipy.interpolate import interp1d
 
-
+from retrying import retry
 # from IPython.display import clear_output
 
 
@@ -27,7 +27,8 @@ class PlotUtils:
 
     # Gamma is 1/serial interval
     # https://wwwnc.cdc.gov/eid/article/26/6/20-0357_article
-    GAMMA = 1 / 4
+    # https://www.nejm.org/doi/full/10.1056/NEJMoa2001316
+    GAMMA = 1 / 7
 
     def __init__(self, path=None, start_date='2020-03-01', cap_limit=2.):
         self.dump_dir_path = path
@@ -63,30 +64,34 @@ class PlotUtils:
         except TypeError:
             return pd.Series([0, 1], index=[f'Low_{p * 100:.0f}', f'High_{p * 100:.0f}'])
 
-        best = None
-        highest_peak = 0
-        highest_value = 0
-        for i, value in enumerate(cumsum):
-            if value > highest_value:
-                highest_value = value
-                highest_peak = i
-            for j, high_value in enumerate(cumsum[i + 1:]):
-                if (high_value - value > p) and (not best or j < best[1] - best[0]):
-                    best = (i, i + j + 1)
-                    break
-
+        # N x N matrix of total probability mass for each low, high
+        total_p = cumsum - cumsum[:, None]
         if self.debug:
-            print('best:', best)
-            print('(highest_value)(highest_peak)', highest_value, highest_peak)
+            print('total_p', total_p)
 
-        if best is None:
-            low = 0 if highest_peak - 4 < 0 else highest_peak - 4
-            high = int(len(cumsum)) if highest_peak + 4 > int(len(cumsum)) else highest_peak + 4
-            low = pmf.index[low]
-            high = pmf.index[high]
-        else:
-            low = pmf.index[best[0]]
-            high = pmf.index[best[1]]
+        # Return all indices with total_p > p
+        lows, highs = (total_p > p).nonzero()
+        if self.debug:
+            print('lows', lows)
+            print('highs', highs)
+        if len(lows) == 0 and len(highs) == 0:
+            lows, highs = total_p.nonzero()
+            print('nonzero', total_p.nonzero())
+            low = pmf.index[lows[lows.min()]]
+            high = pmf.index[highs[highs.min()]]
+            return pd.Series([low, high], index=[f'Low_{p * 100:.0f}', f'High_{p * 100:.0f}'])
+
+        # Find the smallest range (highest density)
+        best = (highs - lows).argmin()
+        if self.debug:
+            print('best', best)
+
+        low = pmf.index[lows[best]]
+        high = pmf.index[highs[best]]
+        if self.debug:
+            print('low', low)
+            print('high', high)
+
         return pd.Series([low, high], index=[f'Low_{p * 100:.0f}', f'High_{p * 100:.0f}'])
 
     def get_posteriors(self, sr, sigma=0.15, window=7, min_periods=1):
@@ -104,7 +109,8 @@ class PlotUtils:
         # (3a) Normalize all rows to sum to 1
         process_matrix /= process_matrix.sum(axis=0)
         # (4) Calculate the initial prior
-        prior0 = sps.gamma(a=4).pdf(self.r_t_range)
+        # prior0 = sps.gamma(a=4).pdf(self.r_t_range)
+        prior0 = np.ones_like(self.r_t_range) / len(self.r_t_range)
         prior0 /= prior0.sum()
 
         # Create a DataFrame that will hold our posteriors for each day
@@ -149,7 +155,7 @@ class PlotUtils:
         smoothed = new_cases.rolling(window,
                                      win_type='gaussian',
                                      min_periods=1,
-                                     center=True).mean(std=3).round()
+                                     center=True).mean(std=2).round()
         if self.debug:
             print('smoothed:', smoothed.to_string())
 
@@ -358,7 +364,8 @@ class PlotUtils:
         plt.close(fig)
         print('[DONE]')
 
-    def plot_all_states(self, states, filter_region=None, no_lockdown=None, partial_lockdown=None):
+    def plot_all_states(self, states, dump_file_name=None, filter_region=None,
+                        no_lockdown=None, partial_lockdown=None, ncols=4):
         if filter_region is None:
             filter_region = []
 
@@ -368,11 +375,12 @@ class PlotUtils:
         final_results = self.get_final_results(results=results, max_likelihood_index=max_likelihood_index)
 
         print('= Saving data to csv...\t\t\t\t', end="", flush=True)
-        final_results.to_csv(os.path.join(self.dump_info_dir_path, 'all_counties_realtime_rt.csv'))
+        dump_file_name = dump_file_name if dump_file_name is not None else 'all_counties_realtime_rt'
+        final_results.to_csv(os.path.join(self.dump_info_dir_path, dump_file_name+'.csv'))
         print('[DONE]')
 
         print('= Sub-plotting Rt...\t\t\t\t', end="", flush=True)
-        ncols = 4
+        ncols = ncols
         nrows = int(np.ceil(len(results) / ncols))
         fig, axes = plt.subplots(nrows=nrows, ncols=ncols, figsize=(15, nrows * 3))
         for i, (state_name, result) in enumerate(final_results.groupby('state')):
@@ -380,7 +388,7 @@ class PlotUtils:
 
         fig.tight_layout()
         fig.set_facecolor('w')
-        plt.savefig(os.path.join(self.dump_info_dir_path, 'all_counties_realtime_rt.png'))
+        plt.savefig(os.path.join(self.dump_info_dir_path, dump_file_name+'.png'))
         plt.close(fig)
         print('[DONE]')
 
@@ -392,10 +400,10 @@ class PlotUtils:
 
         print('= Plotting Rt standings (ML)...\t\t\t', end="", flush=True)
         mr.sort_values('ML', inplace=True)
-        figsize = ((15.9 / 50) * len(mr) + .1 + 1, 11)
+        figsize = ((15.9 / 50) * len(mr) + .1 + 4, 11)
         fig, ax = self.plot_standings(mr, title='Most Recent $R_t$ by State (sort by ML)', figsize=figsize,
                                       no_lockdown=no_lockdown, partial_lockdown=partial_lockdown)
-        plt.savefig(os.path.join(self.dump_info_dir_path, 'all_counties_realtime_rt_ml.png'))
+        plt.savefig(os.path.join(self.dump_info_dir_path, dump_file_name+'_ml.png'))
         plt.close(fig)
         print('[DONE]')
 
@@ -403,7 +411,7 @@ class PlotUtils:
         mr.sort_values('High_90', inplace=True)
         fig, ax = self.plot_standings(mr, title='Most Recent $R_t$ by State (sort by High_90)', figsize=figsize,
                                       no_lockdown=no_lockdown, partial_lockdown=partial_lockdown)
-        plt.savefig(os.path.join(self.dump_info_dir_path, 'all_counties_realtime_rt_high.png'))
+        plt.savefig(os.path.join(self.dump_info_dir_path, dump_file_name+'_high.png'))
         plt.close(fig)
         print('[DONE]')
 
@@ -411,7 +419,7 @@ class PlotUtils:
         show = mr[mr.High_90.le(1.0)].sort_values('ML')
         fig, ax = self.plot_standings(show, title='Likely Under Control (High_90)', figsize=figsize,
                                       no_lockdown=no_lockdown, partial_lockdown=partial_lockdown)
-        plt.savefig(os.path.join(self.dump_info_dir_path, 'all_counties_realtime_rt_luc.png'))
+        plt.savefig(os.path.join(self.dump_info_dir_path, dump_file_name+'_luc.png'))
         plt.close(fig)
         print('[DONE]')
 
@@ -419,7 +427,7 @@ class PlotUtils:
         show = mr[mr.Low_90.ge(1.0)].sort_values('Low_90')
         fig, ax = self.plot_standings(show, figsize=figsize, title='Likely NOT Under Control (Low_90)',
                                       no_lockdown=no_lockdown, partial_lockdown=partial_lockdown)
-        plt.savefig(os.path.join(self.dump_info_dir_path, 'all_counties_realtime_rt_lnuc.png'))
+        plt.savefig(os.path.join(self.dump_info_dir_path, dump_file_name+'_lnuc.png'))
         plt.close(fig)
         print('[DONE]')
 

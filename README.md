@@ -139,6 +139,7 @@ ar trebui să fie luate în considerare în acest moment.**
 #### Rt For Romania
 ![RomaniaNewCasesPerDay](realtime-rt/plots/romania/Romania_per_day.png)
 ![RomaniaRealtimeRt](realtime-rt/plots/romania/Romania_realtime_rt.png)
+![RomaniaRealtimeRtComparative](realtime-rt/plots/romania/results/all_sources_realtime_rt.png)
 
 #### Rt For Every County
 ![AllCountyRealtimeRt](realtime-rt/plots/romania/results/all_counties_realtime_rt.png)

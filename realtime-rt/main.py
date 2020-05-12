@@ -1,17 +1,20 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+import sys
+from io import StringIO
+
 import pandas as pd
 
 import plotter
 import sweeper
 
 
-def plot_single_area(area, sw):
+def plot_single_area(area, sw, source=None):
     print('-' * 58)
     print('-' * 20 + ' ' + area + ' ' + '-' * 20)
     print('= Getting data...')
     pu = plotter.PlotUtils(sw.png_dir_path)
-    states, daily_cases_path = sw.get_daily_cases()
+    states, daily_cases_path = sw.get_daily_cases(source=source)
     if states is None:
         states = pd.read_csv(daily_cases_path,
                              usecols=[0, 1, 2],
@@ -40,6 +43,39 @@ def plot_all_in_one(area, sw, start_date='2020-03-01', cap_limit=2.):
                              parse_dates=['date'],
                              squeeze=True).sort_index()
     pu.plot_all_states(states)
+    print('-' * 26 + ' DONE ' + '-' * 26)
+
+
+def plot_single_area_all_sources(area, sw, cap_limit=2.):
+    print('-' * 58)
+    print('-' * 20 + ' ' + area + ' ' + '-' * 20)
+    print('= Getting data...')
+    pu = plotter.PlotUtils(sw.png_dir_path, cap_limit=cap_limit)
+
+    output = StringIO()
+    header_set = False
+    for name, source in sw.sources:
+        print('= Gathering for:', name)
+        states, daily_cases_path = sw.get_daily_cases(source=source)
+        if states is None:
+            with open(daily_cases_path, 'r') as f:
+                contents = f.readlines()
+                for index, line in enumerate(contents):
+                    contents[index] = line.replace(area, area + '_' + name)
+
+                if header_set:
+                    contents = contents[1:]
+                output.writelines(contents)
+                header_set = True
+
+    output.seek(0)
+    states = pd.read_csv(output,
+                         usecols=[0, 1, 2],
+                         index_col=['state', 'date'],
+                         parse_dates=['date'],
+                         squeeze=True).sort_index()
+
+    pu.plot_all_states(states, dump_file_name='all_sources_realtime_rt', ncols=3)
     print('-' * 26 + ' DONE ' + '-' * 26)
 
 
@@ -83,9 +119,16 @@ def plot_test_ro_incoherent_data():
 
 if __name__ == "__main__":
     # Plotting zone
-    plot_single_area(area='Romania', sw=sweeper.SweeperRO())
-    plot_all_in_one(area='Romania Counties', sw=sweeper.SweeperRO(), start_date='2020-04-01', cap_limit=4.)
-    # plot_single_area(area='Europe', sw=sweeper.SweeperEU())
+
+    # ROMANIA
+    sw = sweeper.SweeperRO()
+
+    plot_single_area(area='Romania', sw=sw, source=sw.GETDailyCasesEUCSSEGI)
+    plot_all_in_one(area='Romania Counties', sw=sw, start_date='2020-04-01', cap_limit=4.)
+    plot_single_area_all_sources(area='Romania', sw=sw, cap_limit=4.)
+
+    # EUROPE
+    plot_single_area(area='Europe', sw=sweeper.SweeperEU())
     plot_all_in_one(area='Europe', sw=sweeper.SweeperEU())
 
     # Testing zone

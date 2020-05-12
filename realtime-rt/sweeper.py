@@ -3,6 +3,7 @@ import datetime
 import os
 import csv, json
 import re
+import sys
 
 import pandas as pd
 import requests as req
@@ -90,11 +91,21 @@ class SweeperEU:
 
 class SweeperRO:
     # JSON format with important data by day in Romania
-    GETDailyCases = "https://covid19.geo-spatial.org/api/dashboard/getDailyCases"
+    GETDailyCasesGEO = "https://covid19.geo-spatial.org/api/dashboard/getDailyCases"
     # JSON downloaded from https://datelazi.ro/ - historical data about cases per county
     GETHistoryInfoJSON = "ro_history_15-04-2020.json"
     # JSON format with important data by day in Romania
-    GETHistoryInfo = "https://api1.datelazi.ro/api/v2/data"
+    GETDailyCasesCODE = "https://api1.datelazi.ro/api/v2/data"
+    # CSV for EU Data
+    GETDailyCasesEUCSSEGI = "https://github.com/CSSEGISandData/COVID-19/raw/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv"
+    GETDailyCasesNINJA = "https://corona.lmao.ninja/v2/historical"
+
+    sources = [
+        # ('GEO', GETDailyCasesGEO),
+        ('CODE', GETDailyCasesCODE),
+        ('EUCSSEGI', GETDailyCasesEUCSSEGI),
+        ('NINJA', GETDailyCasesNINJA),
+    ]
 
     ROFilter = ["AB", "AG", "AR", "B", "BC", "BH", "BN", "BR", "BT", "BV", "BZ", "CJ", "CL", "CS", "CT", "CV", "DB",
                 "DJ", "GJ", "GL", "GR", "HD", "HR", "IF", "IL", "IS", "MH", "MM", "MS", "NT", "OT", "PH", "SB", "SJ",
@@ -111,15 +122,27 @@ class SweeperRO:
         if not os.path.exists(self.png_dir_path):
             os.makedirs(self.png_dir_path)
 
-    def get_daily_cases(self):
+    def get_daily_cases(self, source=None):
+        if source is None:
+            return self.get_daily_cases_geo()
+        if source == self.GETDailyCasesGEO:
+            return self.get_daily_cases_geo()
+        if source == self.GETDailyCasesCODE:
+            return self.get_daily_cases_code()
+        if source == self.GETDailyCasesEUCSSEGI:
+            return self.get_daily_cases_cssegi()
+        if source == self.GETDailyCasesNINJA:
+            return self.get_daily_cases_ninja()
+
+    def get_daily_cases_geo(self):
         # relevant information only for country
-        resp = req.get(self.GETDailyCases)
+        resp = req.get(self.GETDailyCasesGEO)
         data = json.loads(resp.text)
         data = data['data']['data']
         # print(json.dumps(data, indent=4, sort_keys=True))
 
         state = 'Romania'
-        csv_file_path = os.path.join(self.info_dir_path, "ro_daily_cases.csv")
+        csv_file_path = os.path.join(self.info_dir_path, "ro_daily_cases_geo.csv")
         data_file = open(csv_file_path, "w")
         f = csv.writer(data_file)
         f.writerow(["date", "state", "cases"])
@@ -127,11 +150,77 @@ class SweeperRO:
             f.writerow([elem['Data'], state, elem['Cazuri active']])
         return None, csv_file_path
 
+    def get_daily_cases_code(self):
+        # relevant information only for country
+        resp = req.get(self.GETDailyCasesCODE)
+        data = json.loads(resp.text)
+        data = data['historicalData']
+        # print(json.dumps(data, indent=4, sort_keys=True))
+
+        state = 'Romania'
+        csv_file_path = os.path.join(self.info_dir_path, "ro_daily_cases_code.csv")
+        data_file = open(csv_file_path, "w")
+        f = csv.writer(data_file)
+        f.writerow(["date", "state", "cases"])
+        for date, info in data.items():
+            date = date.replace("20202", "2020")
+            f.writerow([date, state, info['numberInfected']])
+
+        return None, csv_file_path
+
+    def get_daily_cases_cssegi(self):
+        resp = pd.read_csv(self.GETDailyCasesEUCSSEGI)
+        resp = resp.drop(['Lat', 'Long'], axis=1)
+        ncountries = resp['Country/Region'].unique().tolist()
+        dfa = pd.DataFrame()
+        for i, country in enumerate(ncountries):
+            if country != 'Romania':
+                continue
+            dfc = resp[resp['Country/Region'] == country].copy()
+            if len(dfc) > 1:
+                dfc = dfc.drop(['Province/State'], axis=1).groupby('Country/Region').sum().reset_index()
+            else:
+                dfc = dfc.drop(['Province/State'], axis=1)
+            dfc2 = dfc.melt(id_vars=["Country/Region"],
+                            var_name="Date",
+                            value_name="cases")
+            dfc2 = dfc2.rename({'Country/Region': 'state', 'Date': 'date'}, axis=1)
+            dfa = dfa.append(dfc2)
+        dfa['date'] = pd.to_datetime(dfa['date'])
+        states = dfa.set_index(['date', 'state']).squeeze()
+
+        csv_file_path = os.path.join(self.info_dir_path, "ro_daily_cases_eu_cssegi.csv")
+        states.to_csv(csv_file_path)
+
+        return None, csv_file_path
+
+    def get_daily_cases_ninja(self):
+        resp = req.get(self.GETDailyCasesNINJA)
+        data = json.loads(resp.text)
+
+        csv_file_path = os.path.join(self.info_dir_path, "ro_daily_cases_eu_ninja.csv")
+        data_file = open(csv_file_path, "w")
+        f = csv.writer(data_file)
+        f.writerow(["date", "state", "cases"])
+        for elem in data:
+            state = elem['country']
+            if state not in "Romania":
+                continue
+            if elem['province'] is not None:
+                continue
+            for date, cases in elem['timeline']['cases'].items():
+                date = re.sub('/20$', '/2020', date)
+                now_date = datetime.datetime.strptime(date, '%m/%d/%Y')
+                date = now_date.strftime('%Y-%m-%d')
+                f.writerow([date, state, cases])
+
+        return None, csv_file_path
+
     def get_cases_by_county(self):
         # json_file_path = os.path.join(self.info_dir_path, self.GETHistoryInfoJSON)
         # with open(json_file_path, "r", encoding='ISO-8859-1') as data_file:
         #     data = json.load(data_file)
-        resp = req.get(self.GETHistoryInfo)
+        resp = req.get(self.GETDailyCasesCODE)
         data = json.loads(resp.text)
         data = data['historicalData']
         data = {k: v for k, v in data.items() if v["countyInfectionsNumbers"] != {}}
