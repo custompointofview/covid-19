@@ -100,7 +100,7 @@ def plot_test_ro_incoherent_data():
     sw_ro.create_output_dirs()
     pu = plotter.PlotUtils(sw_ro.png_dir_path, start_date='2020-04-01', cap_limit=4.)
     pu.create_dump_dir()
-    daily_cases_path = sw_ro.get_cases_by_county()
+    states, daily_cases_path = sw_ro.get_cases_by_county()
     states = pd.read_csv(daily_cases_path,
                          usecols=[0, 1, 2],
                          index_col=['state', 'date'],
@@ -128,7 +128,7 @@ if __name__ == "__main__":
     plot_single_area_all_sources(area='Romania', sw=sw, cap_limit=4.)
 
     # EUROPE
-    plot_single_area(area='Europe', sw=sweeper.SweeperEU())
+    # plot_single_area(area='Europe', sw=sweeper.SweeperEU())
     plot_all_in_one(area='Europe', sw=sweeper.SweeperEU())
 
     # Testing zone

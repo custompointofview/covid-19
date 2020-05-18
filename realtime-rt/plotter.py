@@ -77,9 +77,18 @@ class PlotUtils:
         if len(lows) == 0 and len(highs) == 0:
             lows, highs = total_p.nonzero()
             print('nonzero', total_p.nonzero())
+            print('lows', lows)
+            print('highs', highs)
+
+            if len(lows) == 0 and len(highs) == 0:
+                return pd.Series([0, 1], index=[f'Low_{p * 100:.0f}', f'High_{p * 100:.0f}'])
+
             low = pmf.index[lows[lows.min()]]
             high = pmf.index[highs[highs.min()]]
-            return pd.Series([low, high], index=[f'Low_{p * 100:.0f}', f'High_{p * 100:.0f}'])
+            print('low', low)
+            print('high', high)
+
+            return pd.Series([0, 1], index=[f'Low_{p * 100:.0f}', f'High_{p * 100:.0f}'])
 
         # Find the smallest range (highest density)
         best = (highs - lows).argmin()
