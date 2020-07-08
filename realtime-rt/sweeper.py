@@ -95,7 +95,8 @@ class SweeperRO:
     # JSON downloaded from https://datelazi.ro/ - historical data about cases per county
     GETHistoryInfoJSON = "ro_history_15-04-2020.json"
     # JSON format with important data by day in Romania
-    GETDailyCasesCODE = "https://api1.datelazi.ro/api/v2/data"
+    # GETDailyCasesCODE = "https://api1.datelazi.ro/api/v2/data"
+    GETDailyCasesCODE = "https://datelazi.ro/latestData.json"
     # CSV for EU Data
     GETDailyCasesEUCSSEGI = "https://github.com/CSSEGISandData/COVID-19/raw/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv"
     GETDailyCasesNINJA = "https://corona.lmao.ninja/v2/historical"
@@ -223,7 +224,7 @@ class SweeperRO:
         resp = req.get(self.GETDailyCasesCODE)
         data = json.loads(resp.text)
         data = data['historicalData']
-        data = {k: v for k, v in data.items() if v["countyInfectionsNumbers"] != {}}
+        data = {k: v for k, v in data.items() if "countyInfectionsNumbers" in v and v["countyInfectionsNumbers"] != {}}
 
         for k, v in data.items():
             if "20202" in k:
