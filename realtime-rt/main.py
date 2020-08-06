@@ -2,12 +2,14 @@
 # -*- coding: utf-8 -*-
 import sys
 from io import StringIO
+from PIL import Image, ImageDraw, ImageFont
 
 import pandas as pd
 
 import plotter
 import sweeper
 
+from datetime import date
 
 def plot_single_area(area, sw, source=None):
     print('-' * 58)
@@ -117,6 +119,19 @@ def plot_test_ro_incoherent_data():
     pu.plot_state_realtime_rt(states, state_name, window)
 
 
+def plot_update_date():
+    img = Image.new('RGB', (250, 50), color=(255, 255, 255))
+
+    fnt = ImageFont.load_default()
+    d = ImageDraw.Draw(img)
+
+    today = date.today()
+    text = "Last Updated on: " + today.strftime("%B %d, %Y")
+
+    d.text(xy=(10, 20), text=text, font=fnt, fill=(0, 0, 0))
+    img.save('last_update_date.png')
+
+
 if __name__ == "__main__":
     # Plotting zone
 
@@ -130,6 +145,9 @@ if __name__ == "__main__":
     # EUROPE
     # plot_single_area(area='Europe', sw=sweeper.SweeperEU())
     plot_all_in_one(area='Europe', sw=sweeper.SweeperEU())
+
+    # DATE
+    plot_update_date()
 
     # Testing zone
     # plot_test_eu_incoherent_data()

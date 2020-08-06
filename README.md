@@ -3,6 +3,8 @@ A collection of work related to COVID-19
 
 ![Update Data](https://github.com/custompointofview/covid-19/workflows/Update%20Data/badge.svg)
 
+![LastUpdate](realtime-rt/last_update_date.png)
+
 ## R0 in Realtime
 **A mimetic implementation after:** [Realtime-R0](https://github.com/k-sys/covid-19/blob/master/Realtime%20R0.ipynb)
 

@@ -96,7 +96,8 @@ class SweeperRO:
     GETHistoryInfoJSON = "ro_history_15-04-2020.json"
     # JSON format with important data by day in Romania
     # GETDailyCasesCODE = "https://api1.datelazi.ro/api/v2/data"
-    GETDailyCasesCODE = "https://datelazi.ro/latestData.json"
+    # GETDailyCasesCODE = "https://datelazi.ro/latestData.json"
+    GETDailyCasesCODE = "https://di5ds1eotmbx1.cloudfront.net/latestData.json"
     # CSV for EU Data
     GETDailyCasesEUCSSEGI = "https://github.com/CSSEGISandData/COVID-19/raw/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv"
     GETDailyCasesNINJA = "https://corona.lmao.ninja/v2/historical"
