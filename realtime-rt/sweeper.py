@@ -95,9 +95,11 @@ class SweeperRO:
     # JSON downloaded from https://datelazi.ro/ - historical data about cases per county
     GETHistoryInfoJSON = "ro_history_15-04-2020.json"
     # JSON format with important data by day in Romania
-    # GETDailyCasesCODE = "https://api1.datelazi.ro/api/v2/data"
-    # GETDailyCasesCODE = "https://datelazi.ro/latestData.json"
-    GETDailyCasesCODE = "https://di5ds1eotmbx1.cloudfront.net/latestData.json"
+    GETDailyCasesCODE = [
+        "https://datelazi.ro/latestData.json",
+        "https://api1.datelazi.ro/api/v2/data",
+        "https://di5ds1eotmbx1.cloudfront.net/latestData.json",
+    ]
     # CSV for EU Data
     GETDailyCasesEUCSSEGI = "https://github.com/CSSEGISandData/COVID-19/raw/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv"
     GETDailyCasesNINJA = "https://corona.lmao.ninja/v2/historical"
@@ -138,7 +140,15 @@ class SweeperRO:
 
     def get_daily_cases_geo(self):
         # relevant information only for country
-        resp = req.get(self.GETDailyCasesGEO)
+        resp = None
+        for link in self.GETDailyCasesCODE:
+            try:
+                resp = req.get(link)
+                break
+            except Exception as e:
+                print(e)
+        if resp is None:
+            raise ValueError('Links are not available or not working !!!')
         data = json.loads(resp.text)
         data = data['data']['data']
         # print(json.dumps(data, indent=4, sort_keys=True))
@@ -154,7 +164,15 @@ class SweeperRO:
 
     def get_daily_cases_code(self):
         # relevant information only for country
-        resp = req.get(self.GETDailyCasesCODE)
+        resp = None
+        for link in self.GETDailyCasesCODE:
+            try:
+                resp = req.get(link)
+                break
+            except Exception as e:
+                print(e)
+        if resp is None:
+            raise ValueError('Links are not available or not working !!!')
         data = json.loads(resp.text)
         data = data['historicalData']
         # print(json.dumps(data, indent=4, sort_keys=True))
@@ -222,7 +240,15 @@ class SweeperRO:
         # json_file_path = os.path.join(self.info_dir_path, self.GETHistoryInfoJSON)
         # with open(json_file_path, "r", encoding='ISO-8859-1') as data_file:
         #     data = json.load(data_file)
-        resp = req.get(self.GETDailyCasesCODE)
+        resp = None
+        for link in self.GETDailyCasesCODE:
+            try:
+                resp = req.get(link)
+                break
+            except Exception as e:
+                print(e)
+        if resp is None:
+            raise ValueError('Links are not available or not working !!!')
         data = json.loads(resp.text)
         data = data['historicalData']
         data = {k: v for k, v in data.items() if "countyInfectionsNumbers" in v and v["countyInfectionsNumbers"] != {}}

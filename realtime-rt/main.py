@@ -11,6 +11,7 @@ import sweeper
 
 from datetime import date
 
+
 def plot_single_area(area, sw, source=None):
     print('-' * 58)
     print('-' * 20 + ' ' + area + ' ' + '-' * 20)
