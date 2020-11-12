@@ -1,9 +1,9 @@
 #!/usr/bin/env python
+import csv
 import datetime
+import json
 import os
-import csv, json
 import re
-import sys
 
 import pandas as pd
 import requests as req
@@ -141,8 +141,9 @@ class SweeperRO:
     def get_daily_cases_geo(self):
         # relevant information only for country
         resp = None
-        for link in self.GETDailyCasesCODE:
+        for link in self.GETDailyCasesGEO:
             try:
+                print("Trying out link:", link)
                 resp = req.get(link)
                 break
             except Exception as e:
@@ -167,6 +168,7 @@ class SweeperRO:
         resp = None
         for link in self.GETDailyCasesCODE:
             try:
+                print("Trying out link:", link)
                 resp = req.get(link)
                 break
             except Exception as e:
@@ -243,6 +245,7 @@ class SweeperRO:
         resp = None
         for link in self.GETDailyCasesCODE:
             try:
+                print("Trying out link:", link)
                 resp = req.get(link)
                 break
             except Exception as e:
@@ -251,7 +254,10 @@ class SweeperRO:
             raise ValueError('Links are not available or not working !!!')
         data = json.loads(resp.text)
         data = data['historicalData']
-        data = {k: v for k, v in data.items() if "countyInfectionsNumbers" in v and v["countyInfectionsNumbers"] != {}}
+        data = {k: v for k, v in data.items()
+                if "countyInfectionsNumbers" in v
+                and v["countyInfectionsNumbers"] != {}
+                and v["countyInfectionsNumbers"] is not None}
 
         for k, v in data.items():
             if "20202" in k:

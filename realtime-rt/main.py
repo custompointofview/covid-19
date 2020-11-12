@@ -139,7 +139,7 @@ if __name__ == "__main__":
     # ROMANIA
     sw = sweeper.SweeperRO()
 
-    plot_single_area(area='Romania', sw=sw, source=sw.GETDailyCasesCODE)
+    # plot_single_area(area='Romania', sw=sw, source=sw.GETDailyCasesCODE)
     plot_all_in_one(area='Romania Counties', sw=sw, start_date='2020-04-01', cap_limit=4.)
     plot_single_area_all_sources(area='Romania', sw=sw, cap_limit=4.)
 
