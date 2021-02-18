@@ -108,7 +108,11 @@ class SweeperRO:
         # ('GEO', GETDailyCasesGEO),
         ('CODE', GETDailyCasesCODE),
         ('EUCSSEGI', GETDailyCasesEUCSSEGI),
-        ('NINJA', GETDailyCasesNINJA),
+        # TODO: this needs to be uncommented - the date format is wrong and it fails:
+        # File "/home/runner/work/covid-19/covid-19/realtime-rt/sweeper.py", line 235, in get_daily_cases_ninja
+        # now_date = datetime.datetime.strptime(date, '%m/%d/%Y')
+        # ValueError: time data '1/19/21' does not match format '%m/%d/%Y'
+        # ('NINJA', GETDailyCasesNINJA),
     ]
 
     ROFilter = ["AB", "AG", "AR", "B", "BC", "BH", "BN", "BR", "BT", "BV", "BZ", "CJ", "CL", "CS", "CT", "CV", "DB",
