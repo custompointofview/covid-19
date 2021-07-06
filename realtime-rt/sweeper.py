@@ -185,6 +185,7 @@ class SweeperRO:
                 data = data['historicalData']
                 break
             except Exception as e:
+                data = None
                 print(e)
         if resp is None or data is None:
             raise ValueError('Links are not available or not working !!!')
@@ -257,14 +258,18 @@ class SweeperRO:
         # with open(json_file_path, "r", encoding='ISO-8859-1') as data_file:
         #     data = json.load(data_file)
         resp = None
+        data = None
         for link in self.GETDailyCasesCODE:
             try:
                 print("Trying out link:", link)
                 resp = req.get(link)
+                data = json.loads(resp.text)
+                data = data['historicalData']
                 break
             except Exception as e:
+                data = None
                 print(e)
-        if resp is None:
+        if resp is None or data is None:
             raise ValueError('Links are not available or not working !!!')
         data = json.loads(resp.text)
         data = data['historicalData']
