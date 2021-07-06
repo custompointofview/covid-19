@@ -37,7 +37,8 @@ def plot_all_in_one(area, sw, start_date='2020-03-01', cap_limit=2.):
     print('-' * 58)
     print('-' * 20 + ' ' + area + ' ' + '-' * 20)
     print('= Getting data...')
-    pu = plotter.PlotUtils(sw.png_dir_path, start_date=start_date, cap_limit=cap_limit)
+    pu = plotter.PlotUtils(
+        sw.png_dir_path, start_date=start_date, cap_limit=cap_limit)
     states, daily_cases_path = sw.get_cases_by_county()
     if states is None:
         states = pd.read_csv(daily_cases_path,
@@ -78,7 +79,8 @@ def plot_single_area_all_sources(area, sw, cap_limit=2.):
                          parse_dates=['date'],
                          squeeze=True).sort_index()
 
-    pu.plot_all_states(states, dump_file_name='all_sources_realtime_rt', ncols=3)
+    pu.plot_all_states(
+        states, dump_file_name='all_sources_realtime_rt', ncols=3)
     print('-' * 26 + ' DONE ' + '-' * 26)
 
 
@@ -101,7 +103,8 @@ def plot_test_eu_incoherent_data():
 def plot_test_ro_incoherent_data():
     sw_ro = sweeper.SweeperRO()
     sw_ro.create_output_dirs()
-    pu = plotter.PlotUtils(sw_ro.png_dir_path, start_date='2020-04-01', cap_limit=4.)
+    pu = plotter.PlotUtils(
+        sw_ro.png_dir_path, start_date='2020-04-01', cap_limit=4.)
     pu.create_dump_dir()
     states, daily_cases_path = sw_ro.get_cases_by_county()
     states = pd.read_csv(daily_cases_path,
@@ -141,7 +144,8 @@ if __name__ == "__main__":
 
     plot_single_area(area='Romania', sw=sw, source=sw.GETDailyCasesCODE)
     plot_single_area_all_sources(area='Romania', sw=sw, cap_limit=4.)
-    plot_all_in_one(area='Romania Counties', sw=sw, start_date='2020-04-01', cap_limit=4.)
+    plot_all_in_one(area='Romania Counties', sw=sw,
+                    start_date='2020-04-01', cap_limit=4.)
 
     # EUROPE
     # plot_single_area(area='Europe', sw=sweeper.SweeperEU())

@@ -49,18 +49,21 @@ class SweeperEU:
                 continue
             dfc = resp[resp['Country/Region'] == country].copy()
             if len(dfc) > 1:
-                dfc = dfc.drop(['Province/State'], axis=1).groupby('Country/Region').sum().reset_index()
+                dfc = dfc.drop(
+                    ['Province/State'], axis=1).groupby('Country/Region').sum().reset_index()
             else:
                 dfc = dfc.drop(['Province/State'], axis=1)
             dfc2 = dfc.melt(id_vars=["Country/Region"],
                             var_name="Date",
                             value_name="cases")
-            dfc2 = dfc2.rename({'Country/Region': 'state', 'Date': 'date'}, axis=1)
+            dfc2 = dfc2.rename(
+                {'Country/Region': 'state', 'Date': 'date'}, axis=1)
             dfa = dfa.append(dfc2)
         dfa['date'] = pd.to_datetime(dfa['date'])
         states = dfa.set_index(['state', 'date']).squeeze()
 
-        csv_file_path = os.path.join(self.info_dir_path, "eu_daily_cases_cssegi.csv")
+        csv_file_path = os.path.join(
+            self.info_dir_path, "eu_daily_cases_cssegi.csv")
         states.to_csv(csv_file_path)
 
         states = dfa.set_index(['state', 'date']).squeeze()
@@ -70,7 +73,8 @@ class SweeperEU:
         resp = req.get(self.GETDailyCasesNINJA)
         data = json.loads(resp.text)
 
-        csv_file_path = os.path.join(self.info_dir_path, "eu_daily_cases_ninja.csv")
+        csv_file_path = os.path.join(
+            self.info_dir_path, "eu_daily_cases_ninja.csv")
         data_file = open(csv_file_path, "w")
         f = csv.writer(data_file)
         f.writerow(["date", "state", "cases"])
@@ -159,7 +163,8 @@ class SweeperRO:
         # print(json.dumps(data, indent=4, sort_keys=True))
 
         state = 'Romania'
-        csv_file_path = os.path.join(self.info_dir_path, "ro_daily_cases_geo.csv")
+        csv_file_path = os.path.join(
+            self.info_dir_path, "ro_daily_cases_geo.csv")
         data_file = open(csv_file_path, "w")
         f = csv.writer(data_file)
         f.writerow(["date", "state", "cases"])
@@ -174,17 +179,17 @@ class SweeperRO:
             try:
                 print("Trying out link:", link)
                 resp = req.get(link)
+                data = json.loads(resp.text)
+                data = data['historicalData']
                 break
             except Exception as e:
                 print(e)
         if resp is None:
             raise ValueError('Links are not available or not working !!!')
-        data = json.loads(resp.text)
-        data = data['historicalData']
-        # print(json.dumps(data, indent=4, sort_keys=True))
 
         state = 'Romania'
-        csv_file_path = os.path.join(self.info_dir_path, "ro_daily_cases_code.csv")
+        csv_file_path = os.path.join(
+            self.info_dir_path, "ro_daily_cases_code.csv")
         data_file = open(csv_file_path, "w")
         f = csv.writer(data_file)
         f.writerow(["date", "state", "cases"])
@@ -204,18 +209,21 @@ class SweeperRO:
                 continue
             dfc = resp[resp['Country/Region'] == country].copy()
             if len(dfc) > 1:
-                dfc = dfc.drop(['Province/State'], axis=1).groupby('Country/Region').sum().reset_index()
+                dfc = dfc.drop(
+                    ['Province/State'], axis=1).groupby('Country/Region').sum().reset_index()
             else:
                 dfc = dfc.drop(['Province/State'], axis=1)
             dfc2 = dfc.melt(id_vars=["Country/Region"],
                             var_name="Date",
                             value_name="cases")
-            dfc2 = dfc2.rename({'Country/Region': 'state', 'Date': 'date'}, axis=1)
+            dfc2 = dfc2.rename(
+                {'Country/Region': 'state', 'Date': 'date'}, axis=1)
             dfa = dfa.append(dfc2)
         dfa['date'] = pd.to_datetime(dfa['date'])
         states = dfa.set_index(['date', 'state']).squeeze()
 
-        csv_file_path = os.path.join(self.info_dir_path, "ro_daily_cases_eu_cssegi.csv")
+        csv_file_path = os.path.join(
+            self.info_dir_path, "ro_daily_cases_eu_cssegi.csv")
         states.to_csv(csv_file_path)
 
         return None, csv_file_path
@@ -224,7 +232,8 @@ class SweeperRO:
         resp = req.get(self.GETDailyCasesNINJA)
         data = json.loads(resp.text)
 
-        csv_file_path = os.path.join(self.info_dir_path, "ro_daily_cases_eu_ninja.csv")
+        csv_file_path = os.path.join(
+            self.info_dir_path, "ro_daily_cases_eu_ninja.csv")
         data_file = open(csv_file_path, "w")
         f = csv.writer(data_file)
         f.writerow(["date", "state", "cases"])
@@ -269,7 +278,8 @@ class SweeperRO:
                 data[k_r] = v
                 del data[k]
 
-        csv_file_path = os.path.join(self.info_dir_path, "ro_daily_cases_county.csv")
+        csv_file_path = os.path.join(
+            self.info_dir_path, "ro_daily_cases_county.csv")
         data_file = open(csv_file_path, "w")
         f = csv.writer(data_file)
         f.writerow(["date", "state", "cases"])
