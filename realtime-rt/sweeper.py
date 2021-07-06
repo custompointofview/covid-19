@@ -103,6 +103,7 @@ class SweeperRO:
         "https://datelazi.ro/latestData.json",
         "https://api1.datelazi.ro/api/v2/data",
         "https://di5ds1eotmbx1.cloudfront.net/latestData.json",
+        "https://d35p9e4fm9h3wo.cloudfront.net/latestData.json",
     ]
     # CSV for EU Data
     GETDailyCasesEUCSSEGI = "https://github.com/CSSEGISandData/COVID-19/raw/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv"
@@ -175,6 +176,7 @@ class SweeperRO:
     def get_daily_cases_code(self):
         # relevant information only for country
         resp = None
+        data = None
         for link in self.GETDailyCasesCODE:
             try:
                 print("Trying out link:", link)
@@ -184,9 +186,8 @@ class SweeperRO:
                 break
             except Exception as e:
                 print(e)
-        if resp is None:
+        if resp is None or data is None:
             raise ValueError('Links are not available or not working !!!')
-
         state = 'Romania'
         csv_file_path = os.path.join(
             self.info_dir_path, "ro_daily_cases_code.csv")
